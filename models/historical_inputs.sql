@@ -1,43 +1,48 @@
 with wins as (
     select 
-        id,
+        count(id) as count,
         team,
-        stage,
-        amount
+        avg(amount) as asp
     from `lofty-dynamics-283618.dbt.historical_optys_raw` as historicals
 where team is not null and stage = 'closed-won'
+group by team
 ),
 losses as (
     select 
-        id,
+        count(id) as count,
         team,
-        stage,
-        amount
+        avg(amount) as asp
     from `lofty-dynamics-283618.dbt.historical_optys_raw` as historicals
 where team is not null and stage = 'closed-lost'
+group by team
 ),
 opens as (
     select 
-        id,
+        count(id) as count,
         team,
-        stage,
-        amount
+        avg(amount) as asp
     from `lofty-dynamics-283618.dbt.historical_optys_raw` as historicals
 where team is not null and stage not like 'closed%'
+group by team
 ),
 
 final as (
     select
-    team,
-    avg(wins.amount) as won_asp,
-    avg(losses.amount) as lost_asp,
-    avg(opens.amount) as open_asp,
+    case
+        when team like 'us%' then 'na'
+        else team
+    end as team,
+    wins.count as won_count,
+    losses.count as lost_count,
+    opens.count as open_count,
+
+    wins.asp as won_asp,
+    losses.asp as lost_asp,
+    opens.asp as open_asp,
 
 from wins
 join losses using (team)
 join opens using (team)
-
-group by team
 )
 
 select * from final
