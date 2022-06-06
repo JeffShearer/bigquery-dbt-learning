@@ -11,6 +11,6 @@ replace(stage,'-','_') as stage,
 created,
 age
 
-FROM `lofty-dynamics-283618.dbt.historical_optys_raw` as historicals 
+FROM {{ source('dbt', 'historical_optys_raw') }} as historicals 
 
 WHERE team is not null
