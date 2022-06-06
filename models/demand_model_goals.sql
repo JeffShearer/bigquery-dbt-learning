@@ -18,7 +18,7 @@ with monthly_revenue as (
         end as date,
         region,
         -- need to increase targets to make upfunnel goals make sense
-        rev_percentage * (rev_target*300) as revenue_target
+        cast(rev_percentage as numeric) * (rev_target*300) as revenue_target
 
     from `lofty-dynamics-283618.dbt.revenue_seasonality_raw` as seasonality
 
@@ -63,7 +63,7 @@ inputs as (
         -- select all possible dates from revenue & created date columns
         dates as (
             select team, region, revenue_date as date from calculations
-        union all
+        union distinct
             select team,region,create_month as date from calculations
         ),
         -- select just the revenue-related columns
@@ -84,18 +84,22 @@ inputs as (
                 create_month,
                 created_opps_target
             from calculations
-        )
+        ),
 -- combine dates table with revenue & created columns to get final output
-select
-    dates.team,
-    dates.region,
-    date,
-    created_opps_target,
-    revenue_target,
-    won_deals_target
+    final as (
+    select
+        dates.team,
+        dates.region,
+        date,
+        created_opps_target,
+        revenue_target,
+        won_deals_target
 
-from dates
-left join revenue on date = revenue_date
-left join created on date = create_month
+    from dates
+    left join created on date = create_month and dates.team = created.team
+    left join revenue on date = revenue_date and dates.team = revenue.team
+    )
+
+    select * from final order by date
 
 
