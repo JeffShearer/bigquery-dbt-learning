@@ -24,9 +24,9 @@ with
         select
         team,
         region,
-        round(closed_won_asp,2) as closed_won_asp,
-        round(closed_lost_asp,2) as closed_lost_asp,
-        round(closed_won_count/(closed_won_count + closed_lost_count),2) as win_rate,
+        cast(closed_won_asp as numeric) as closed_won_asp,
+        cast(closed_lost_asp as numeric) as closed_lost_asp,
+        cast(closed_won_count/(closed_won_count + closed_lost_count) as numeric) as win_rate,
         --cycle time needs to be an int for dateadd function to work in goals model
         cast(created_closed_cycle_time as INT64) as created_closed_cycle_time
         from calculations
