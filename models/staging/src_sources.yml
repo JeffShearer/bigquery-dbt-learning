@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: dbt
+    tables:
+      - name: historical_optys_raw
+      - name: revenue_seasonality_raw
+      - name: revenue_targets_raw
