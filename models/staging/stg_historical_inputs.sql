@@ -15,7 +15,7 @@ with
                 when team like 'us-%' then 'na'
                 else team
                 end as region,
-        from {{ ref('historical_optys-cleaned') }}
+        from {{ ref('stg_historical_optys_cleaned') }}
         where team is not null
 
         group by team),

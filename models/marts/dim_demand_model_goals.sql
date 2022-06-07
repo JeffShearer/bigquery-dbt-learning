@@ -17,9 +17,9 @@ with
                 else revenue_target
             end as revenue_target
 
-        from {{ ref('historical_inputs') }}
+        from {{ ref('stg_historical_inputs') }} as historical_inputs
 
-        inner join {{ ref('rev_seasonality_targets') }} as monthly_revenue on historical_inputs.region = monthly_revenue.region
+        inner join {{ ref('stg_rev_seasonality_targets') }} as monthly_revenue on historical_inputs.region = monthly_revenue.region
     ),
     --calculate upfunnel goals using inputs & targets
     calculations as (

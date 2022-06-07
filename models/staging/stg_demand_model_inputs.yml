@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: stg_historical_optys_cleaned
+    columns: 
+        - name: id
+          tests:
+            - unique
+            - not_null
+        - name: stage
+          tests:
+            - accepted_values:
+                values:
+                    - closed_won
+                    - closed_lost
+                    - open
+                    - discovery
+                    - qualified
+
+    
