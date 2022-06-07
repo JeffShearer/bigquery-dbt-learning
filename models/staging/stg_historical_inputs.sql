@@ -19,6 +19,21 @@ with
         where team is not null
 
         group by team),
+        -- not working just yet
+        cohorts as (
+            select
+                i.team,
+                i.region,
+                i.closed_won_asp,
+                i.closed_lost_asp,
+                case when month_num = 0 then percentage_of_wins end as wins_month_0,
+                case when month_num = 1 then percentage_of_wins end as wins_month_1,
+                case when month_num = 2 then percentage_of_wins end as wins_month_2,
+                case when month_num = 3 then percentage_of_wins end as wins_month_3,
+                case when month_num = 4 then percentage_of_wins end as wins_month_4,
+            from calculations as i
+            inner join {{ref('stg_win_conversion_cohorts')}} using(team)
+        ),
 
     final as (
         select
