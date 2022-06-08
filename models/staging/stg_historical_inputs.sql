@@ -1,15 +1,11 @@
 {% set stages = ["closed_won", "closed_lost", "open","discovery","qualified"] %}
-
-with 
-    calculations as (
+-- sets team & regional inputs for asp & win rates
+with calculations as (
         select
             {% for value in stages %}
             avg(case when stage = '{{value}}' then amount end) as {{value}}_asp,
             count(case when stage = '{{value}}' then id end) as {{value}}_count,
             {% endfor %}
-            avg(case 
-                when stage = 'closed_won' then age
-            end) as created_closed_cycle_time,
             team,
             case
                 when team like 'us-%' then 'na'
@@ -20,16 +16,21 @@ with
 
         group by team),
 
-    final as (
+        -- joins cohort conversion data by month to replace old cycle time metrics
+    cohorts as (
         select
-        team,
-        region,
-        cast(closed_won_asp as numeric) as closed_won_asp,
-        cast(closed_lost_asp as numeric) as closed_lost_asp,
-        cast(closed_won_count/(closed_won_count + closed_lost_count) as numeric) as win_rate,
-        --cycle time needs to be an int for dateadd function to work in goals model
-        cast(created_closed_cycle_time as INT64) as created_closed_cycle_time
-        from calculations
+            i.team,
+            i.region,
+            cast(closed_won_asp as numeric) as closed_won_asp,
+            cast(closed_lost_asp as numeric) as closed_lost_asp,
+            cast(closed_won_count/(closed_won_count + closed_lost_count) as numeric) as win_rate,
+            pct_conversions_num_month_0,
+            pct_conversions_num_month_1,
+            pct_conversions_num_month_2,
+            pct_conversions_num_month_3,
+            pct_conversions_num_month_4
+        from calculations as i
+        inner join {{ref('stg_win_conversion_cohorts')}} using(team)
     )
 
-select * from final
+select * from cohorts

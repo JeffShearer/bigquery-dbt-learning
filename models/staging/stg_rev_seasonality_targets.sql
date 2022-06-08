@@ -1,3 +1,4 @@
+-- combines seasonality with targets to create revenue targets by team and by month
 select 
     seasonality.year,
     case
