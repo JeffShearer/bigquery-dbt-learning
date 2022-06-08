@@ -48,4 +48,18 @@ final as (
     order by 1,4
 )
 
-select * from final
+--pivots table to have each month_num from 0-4 as its own column for easier joining with historical inputs.
+select * from 
+(
+select
+team,
+month_num,
+percentage_of_wins
+from final 
+)
+pivot
+(
+    sum(percentage_of_wins) as pct_conversions_num_month
+    for month_num in (0,1,2,3,4)
+)
+
